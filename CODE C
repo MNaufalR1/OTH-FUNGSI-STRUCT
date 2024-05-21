@@ -1,0 +1,111 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Node {
+    int data;
+    struct Node* next;
+    struct Node* prev;
+} Node;
+
+Node* createNode(int data) {
+    Node* newNode = createNode(data);
+    if (*head == NULL) {
+        *head = newNode;
+    } else {
+        Node* tail = (*head)->prev;
+        tail->next = newNode;
+        newNode->prev = tail;
+        newNode->next = *head;
+        (*head)->prev = newNode;
+    }
+}
+
+void printList(Node* head) {
+    if (head == NULL) return;
+    Node* temp = head;
+    do {
+        printf("%p %d\n", (void*)temp, temp->data);
+        temp = temp->next;
+    } while (temp != head);
+}
+
+void swapNodes(Node** head, Node* a, Node* b) {
+    if (a == b) return;
+
+    Node* aPrev = a->prev;
+    Node* aNext = a->next;
+    Node* bPrev = b->prev;
+    Node* bNext = b->next;
+
+    if (aNext == b) { 
+        a->next = bNext;
+        b->prev = aPrev;
+        a->prev = b;
+        b->next = a;
+        aPrev->next = b;
+        bNext->prev = a;
+    } else if (bNext == a) { 
+        b->next = aNext;
+        a->prev = bPrev;
+        b->prev = a;
+        a->next = b;
+        bPrev->next = a;
+        aNext->prev = b;
+    } else { 
+        a->next = bNext;
+        a->prev = bPrev;
+        b->next = aNext;
+        b->prev = aPrev;
+        aPrev->next = b;
+        aNext->prev = b;
+        bPrev->next = a;
+        bNext->prev = a;
+    }
+
+    if (*head == a) {
+        *head = b;
+    } else if (*head == b) {
+        *head = a;
+    }
+}
+
+void sortList(Node** head) {
+    if (*head == NULL) return;
+
+    Node* current = *head;
+    Node* index = NULL;
+    int swapped;
+
+    do {
+        swapped = 0;
+        current = *head;
+
+        while (current->next != *head) {
+            index = current->next;
+            if (current->data > index->data) {
+                swapNodes(head, current, index);
+                swapped = 1;
+            } else {
+                current = current->next;
+            }
+        }
+    } while (swapped);
+}
+
+int main() {
+    Node* head = NULL;
+    int N, A;
+    printf("Berapa data yang ingin diinput: ");
+    scanf("%d", &N);
+    for (int i = 0; i < N; i++) {
+        scanf("%d", &A);
+        insertEnd(&head, A);
+    }
+    printf("Data sebelum diurutkan:\n");
+    printList(head);
+    sortList(&head);
+    printf("Data setelah diurutkan:\n");
+    printList(head);
+
+    return 0;
+}
